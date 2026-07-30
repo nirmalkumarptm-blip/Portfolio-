@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirmalkumar — Web Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EEF3F7;
+    --paper-panel: #FFFFFF;
+    --ink: #0F2137;
+    --ink-soft: #44586F;
+    --blue: #1E3A5F;
+    --cyan: #2FA8A0;
+    --amber: #E8A33D;
+    --grid-line: rgba(15, 33, 55, 0.07);
+    --line: rgba(15, 33, 55, 0.13);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      var(--paper);
+    background-size: 32px 32px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+
+  a { color: inherit; }
+
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--cyan);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .path::before { content: "~/"; opacity: 0.6; }
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 1em;
+    background: var(--amber);
+    animation: blink 1.1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.3rem clamp(1.5rem, 5vw, 4rem);
+    background: rgba(238, 243, 247, 0.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.95rem; }
+  .logo span { color: var(--cyan); }
+  nav ul { display: flex; gap: clamp(1rem, 3vw, 2.2rem); list-style: none; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
+  nav a { text-decoration: none; color: var(--ink-soft); }
+  nav a:hover, nav a:focus-visible { color: var(--cyan); }
+  nav a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7rem clamp(1.5rem, 6vw, 5rem) 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero .path { margin-bottom: 1.6rem; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 4.6rem);
+    line-height: 1.08;
+    max-width: 18ch;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.25s;
+  }
+  .hero h1 .accent { color: var(--cyan); }
+  .hero p {
+    margin-top: 1.6rem;
+    max-width: 52ch;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+  .hero-cta { margin-top: 2.4rem; display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s ease forwards 0.55s; }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    text-decoration: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--ink);
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  .btn-solid { background: var(--ink); color: var(--paper); }
+  .btn-solid:hover { background: var(--cyan); border-color: var(--cyan); }
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .status-line {
+    margin-top: 3.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 3px rgba(47,168,160,0.2); }
+
+  .block { max-width: 1000px; margin: 0 auto; padding: 5rem clamp(1.5rem, 5vw, 2.5rem); border-top: 1px solid var(--line); }
+  .block-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2.6rem; }
+  .block-head h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); }
+
+  .panel { background: var(--paper-panel); border: 1px solid var(--line); border-radius: 12px; padding: clamp(1.6rem, 4vw, 2.6rem); }
+
+  .row2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.2rem; }
+  @media (max-width: 720px) { .row2 { grid-template-columns: 1fr; } }
+
+  .panel p { color: var(--ink-soft); }
+  .panel .label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--amber); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.8rem; display: block; }
+  .edu-item { margin-bottom: 1rem; }
+  .edu-item:last-child { margin-bottom: 0; }
+  .edu-item .degree { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.05rem; }
+  .edu-item .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+  .skill-item { padding: 1.3rem; border-radius: 10px; border: 1px solid var(--line); background: var(--paper-panel); }
+  .skill-item .label { color: var(--cyan); }
+  .skill-item p { font-size: 0.9rem; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
+  .chip { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.3rem 0.7rem; border-radius: 5px; background: var(--paper); border: 1px solid var(--line); }
+
+  .project-card {
+    background: var(--blue);
+    color: var(--paper);
+    border-radius: 14px;
+    padding: clamp(2rem, 5vw, 3.2rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card::before {
+    content: "";
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 55%; height: 140%;
+    background: radial-gradient(circle, rgba(47,168,160,0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .project-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.4rem; }
+  .project-path { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--cyan); }
+  .project-card h3 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin-top: 0.4rem; }
+  .project-status { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; border: 1px solid rgba(238,243,247,0.3); padding: 0.4rem 0.8rem; border-radius: 999px; white-space: nowrap; height: fit-content; }
+  .project-desc { color: rgba(238,243,247,0.85); max-width: 62ch; margin-bottom: 2rem; }
+  .project-meta-row { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-bottom: 2.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: rgba(238,243,247,0.7); }
+  .project-meta-row strong { color: var(--paper); font-weight: 500; }
+  .project-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2.2rem; }
+  .feature { border-top: 1px solid rgba(238,243,247,0.2); padding-top: 0.9rem; }
+  .feature .tag-mark { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--amber); display: block; margin-bottom: 0.4rem; }
+  .feature h4 { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
+  .feature p { font-size: 0.85rem; color: rgba(238,243,247,0.65); }
+  .project-stack { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .stack-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.4rem 0.85rem; border-radius: 5px; background: rgba(238,243,247,0.1); }
+
+  .avail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .avail-item { padding: 1.3rem; border-radius: 10px; border: 1px solid var(--line); background: var(--paper-panel); }
+  .avail-item .label { color: var(--amber); }
+  .avail-item p { font-size: 0.9rem; }
+
+  .contact-card { text-align: center; }
+  .contact-card h2 { font-size: clamp(1.7rem, 5vw, 2.6rem); margin-bottom: 1rem; }
+  .contact-card p { color: var(--ink-soft); max-width: 46ch; margin: 0 auto 2rem; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+  footer { text-align: center; padding: 2.2rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--ink-soft); border-top: 1px solid var(--line); }
+
+  @media (max-width: 640px) {
+    header { padding: 1.1rem 1.2rem; }
+    nav ul { gap: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">nirmalkumar<span>.dev</span></div>
+  <nav>
+    <ul>
+      <li><a href="#about">about</a></li>
+      <li><a href="#project">project</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="path">portfolio<span class="cursor"></span></div>
+  <h1>Aspiring web developer, <span class="accent">building full-stack.</span></h1>
+  <p>BCA graduate learning to build complete, real-world web applications — currently exploring frontend and full-stack development, and open to freelance work.</p>
+  <div class="hero-cta">
+    <a href="#project" class="btn btn-solid">View project</a>
+    <a href="#contact" class="btn btn-outline">Get in touch</a>
+  </div>
+  <div class="status-line">
+    <span class="dot"></span> Open to freelance work &amp; full-stack opportunities
+  </div>
+</section>
+
+<section id="about" class="block">
+  <div class="block-head">
+    <span class="path">about</span>
+    <h2>About &amp; Education</h2>
+  </div>
+  <div class="row2">
+    <div class="panel">
+      <span class="label">Profile</span>
+      <p>I'm Nirmalkumar, an aspiring web developer focused on learning web development end to end — from interfaces to the systems behind them. I like building projects with a real shape to them: things a real person would actually use, not just exercises. My first proper build is Wonder Vista, a tourist package system made with a small team.</p>
+    </div>
+    <div class="panel">
+      <span class="label">Education</span>
+      <div class="edu-item">
+        <div class="degree">Bachelor of Computer Applications (BCA)</div>
+        <div class="meta">Graduated 2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="project" class="block">
+  <div class="block-head">
+    <span class="path">project/wonder-vista</span>
+    <h2>Featured Project</h2>
+  </div>
+  <div class="project-card">
+    <div class="project-top">
+      <div>
+        <div class="project-path">tourist-package-system</div>
+        <h3>Wonder Vista</h3>
+      </div>
+      <div class="project-status">In progress · No live demo yet</div>
+    </div>
+    <p class="project-desc">A web platform for browsing and booking curated tourist packages — built with a team of three, covering the 30 best travel packages across India.</p>
+    <div class="project-meta-row">
+      <span><strong>Team size:</strong> 3 members</span>
+      <span><strong>Packages:</strong> Top 30 across India</span>
+      <span><strong>My role:</strong> Web development</span>
+    </div>
+    <div class="project-features">
+      <div class="feature">
+        <span class="tag-mark">→</span>
+        <h4>Package browsing</h4>
+        <p>Users explore a curated list of the top 30 tourist packages across India.</p>
+      </div>
+      <div class="feature">
+        <span class="tag-mark">→</span>
+        <h4>Booking flow</h4>
+        <p>A straightforward path from picking a package to booking it.</p>
+      </div>
+      <div class="feature">
+        <span class="tag-mark">→</span>
+        <h4>Team-built</h4>
+        <p>Developed collaboratively with two other team members.</p>
+      </div>
+    </div>
+    <div class="project-stack">
+      <span class="stack-tag">HTML</span>
+      <span class="stack-tag">CSS</span>
+      <span class="stack-tag">JavaScript</span>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="block">
+  <div class="block-head">
+    <span class="path">skills</span>
+    <h2>Skills</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-item">
+      <span class="label">Frontend</span>
+      <p>Building responsive interfaces from scratch.</p>
+      <div class="chip-row">
+        <span class="chip">HTML</span>
+        <span class="chip">CSS</span>
+        <span class="chip">JavaScript</span>
+      </div>
+    </div>
+    <div class="skill-item">
+      <span class="label">Also learning</span>
+      <p>Expanding into scripting and programming fundamentals.</p>
+      <div class="chip-row">
+        <span class="chip">Python (basics)</span>
+      </div>
+    </div>
+    <div class="skill-item">
+      <span class="label">Working toward</span>
+      <p>Full-stack development — connecting frontend work to real backend systems.</p>
+      <div class="chip-row">
+        <span class="chip">Backend</span>
+        <span class="chip">Databases</span>
+      </div>
+    </div>
+    <div class="skill-item">
+      <span class="label">Approach</span>
+      <p>Learning by building complete, usable systems rather than isolated snippets.</p>
+    </div>
+  </div>
+</section>
+
+<section id="availability" class="block">
+  <div class="block-head">
+    <span class="path">availability</span>
+    <h2>What I'm looking for</h2>
+  </div>
+  <div class="avail-grid">
+    <div class="avail-item">
+      <span class="label">Freelance work</span>
+      <p>Open to freelance frontend or full-stack projects.</p>
+    </div>
+    <div class="avail-item">
+      <span class="label">Focus areas</span>
+      <p>Frontend development, with a growing focus on full-stack.</p>
+    </div>
+    <div class="avail-item">
+      <span class="label">Goal</span>
+      <p>Learning web development thoroughly, one real project at a time.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="block">
+  <div class="panel contact-card">
+    <span class="path">contact</span>
+    <h2 style="margin-top: 0.8rem;">Let's work together</h2>
+    <p>Open to freelance work, collaborations, and opportunities to learn. Reach out anytime.</p>
+    <div class="contact-links">
+      <a href="mailto:nirmalkumarptm@gmail.com" class="btn btn-solid">Email me</a>
+      <a href="https://github.com/nirmalkumarptm-blip" target="_blank" rel="noopener" class="btn btn-outline">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Designed &amp; built by Nirmalkumar — Portfolio 2026
+</footer>
+
+</body>
+</html>
