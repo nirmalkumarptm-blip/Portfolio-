@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PantryIQ — cook with what you've got</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1E2A1F;
+    --bg-2: #223124;
+    --surface: #2A3B2C;
+    --surface-2: #24342A;
+    --card: #F2ECDD;
+    --card-shadow: #16201780;
+    --text: #F2ECDD;
+    --text-dim: #AEB8A2;
+    --gold: #D9A441;
+    --tomato: #C1502E;
+    --herb: #8AAE64;
+    --border: rgba(242,236,221,0.14);
+    --chalk: rgba(242,236,221,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top left, var(--bg-2) 0%, var(--bg) 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Work Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  a{ color: inherit; }
+
+  /* ---------- texture ---------- */
+  .grain{
+    position: fixed; inset:0; pointer-events:none; z-index: 1;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- header / hero ---------- */
+  header{
+    position: relative; z-index: 2;
+    max-width: 1080px; margin: 0 auto;
+    padding: 48px 24px 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .lang-picker{ display:flex; align-items:center; gap: 8px; }
+  .lang-picker label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .lang-picker select{
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 13.5px;
+    cursor: pointer;
+    outline: none;
+  }
+  .lang-picker select:focus{ border-color: var(--gold); }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .brand .dot{ width:8px; height:8px; border-radius:50%; background: var(--tomato); }
+
+  .hero{
+    position: relative; z-index: 2;
+    max-width: 1080px; margin: 0 auto;
+    padding: 20px 24px 56px;
+    border-bottom: 1px dashed var(--border);
+  }
+  h1.headline{
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    font-size: clamp(38px, 6vw, 68px);
+    line-height: 1.05;
+    margin: 10px 0 14px;
+    color: var(--text);
+  }
+  h1.headline .accent{ color: var(--gold); }
+  h1.headline .accent2{ color: var(--herb); }
+  .sub{
+    font-size: 17px; color: var(--text-dim); max-width: 46ch;
+    line-height: 1.55; margin: 0 0 34px;
+  }
+
+  /* ---------- pantry input (signature-adjacent) ---------- */
+  .pantry-box{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px 22px;
+  }
+  .pantry-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 12px; display:block;
+  }
+  .input-row{ display:flex; gap:10px; flex-wrap: wrap; }
+  #ingredientInput{
+    flex: 1 1 220px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+  }
+  #ingredientInput:focus{ border-color: var(--gold); }
+  #ingredientInput::placeholder{ color: var(--text-dim); }
+  .add-btn{
+    background: var(--gold);
+    color: #1E2A1F;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .12s ease, background .2s ease;
+  }
+  .add-btn:hover{ background: #e8b654; transform: translateY(-1px); }
+  .add-btn:active{ transform: translateY(0); }
+
+  .quick-adds{ margin-top: 14px; display:flex; flex-wrap: wrap; gap: 8px; }
+  .chip-suggest{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-dim);
+    border-radius: 100px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .chip-suggest:hover{ border-color: var(--herb); color: var(--herb); }
+
+  .tags{ margin-top: 18px; display:flex; flex-wrap: wrap; gap: 8px; min-height: 20px; }
+  .tag{
+    display:flex; align-items:center; gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--herb);
+    color: var(--herb);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    border-radius: 100px;
+    padding: 7px 8px 7px 14px;
+    animation: pop .18s ease;
+  }
+  @keyframes pop{ from{ transform: scale(.85); opacity:0;} to{ transform: scale(1); opacity:1;} }
+  .tag button{
+    background: none; border: none; color: var(--herb);
+    cursor: pointer; font-size: 15px; line-height:1; padding: 2px 6px;
+    border-radius: 50%;
+  }
+  .tag button:hover{ background: rgba(138,174,100,0.18); }
+
+  .empty-hint{ color: var(--text-dim); font-size: 13px; font-style: italic; }
+
+  /* ---------- controls ---------- */
+  .controls{
+    position: relative; z-index: 2;
+    max-width: 1080px; margin: 0 auto;
+    padding: 26px 24px 6px;
+    display:flex; align-items:center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .result-count{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: var(--text-dim);
+  }
+  .result-count b{ color: var(--gold); font-weight: 600; }
+  .toggle{
+    display:flex; align-items:center; gap: 8px;
+    font-size: 14px; color: var(--text-dim); cursor:pointer; user-select:none;
+  }
+  .toggle input{ accent-color: var(--tomato); width:16px; height:16px; }
+
+  /* ---------- recipe grid ---------- */
+  .grid{
+    position: relative; z-index: 2;
+    max-width: 1080px; margin: 0 auto;
+    padding: 18px 24px 90px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+  }
+
+  .card{
+    background: var(--card);
+    color: #24301F;
+    border-radius: 4px;
+    padding: 20px 20px 18px;
+    position: relative;
+    box-shadow: 0 10px 24px var(--card-shadow);
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:nth-child(3n+1){ --tilt: -0.6deg; }
+  .card:nth-child(3n+2){ --tilt: 0.4deg; }
+  .card:nth-child(3n){ --tilt: -0.2deg; }
+  .card:hover{ transform: rotate(0deg) translateY(-3px); box-shadow: 0 16px 30px var(--card-shadow); }
+
+  .tape{
+    position:absolute; top:-10px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+    width: 74px; height: 22px;
+    background: rgba(217,164,65,0.55);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .card-top{ display:flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .card-title{
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.15;
+    margin: 4px 0 4px;
+  }
+  .card-meta{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: #5B6650;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  /* jar gauge */
+  .jar{ flex-shrink: 0; width: 40px; height: 52px; position: relative; }
+  .jar svg{ width:100%; height:100%; display:block; }
+  .jar-pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; color: #24301F;
+    padding-top: 6px;
+  }
+
+  .ing-list{ margin: 14px 0 10px; padding: 0; list-style: none; font-size: 13.5px; line-height: 1.9; }
+  .ing-list li{ display:flex; align-items:center; gap: 8px; }
+  .ing-list li.have{ color: #33472A; }
+  .ing-list li.missing{ color: #8A8272; }
+  .ing-dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .ing-list li.have .ing-dot{ background: var(--herb); }
+  .ing-list li.missing .ing-dot{ background: #C9BFA5; }
+  .ing-list li.missing{ text-decoration: line-through; text-decoration-color: #C9BFA5; }
+
+  .card-footer{
+    margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CFC6AC;
+    font-size: 12.5px; color: #6C7660;
+  }
+
+  .no-results{
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .no-results .big{ font-family:'Kalam', cursive; font-size: 26px; color: var(--text); display:block; margin-bottom: 8px; }
+
+  /* ---------- recipe modal ---------- */
+  .modal-overlay{
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(10,14,10,0.72);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+    opacity: 0; pointer-events: none;
+    transition: opacity .18s ease;
+  }
+  .modal-overlay.open{ opacity: 1; pointer-events: auto; }
+  .modal{
+    background: var(--card);
+    color: #24301F;
+    border-radius: 8px;
+    max-width: 560px; width: 100%;
+    padding: 28px 26px 30px;
+    position: relative;
+    transform: translateY(10px);
+    transition: transform .18s ease;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+  .modal-overlay.open .modal{ transform: translateY(0); }
+  .modal-close{
+    position: absolute; top: 14px; right: 14px;
+    background: none; border: none; font-size: 22px; line-height: 1;
+    color: #6C7660; cursor: pointer; padding: 6px;
+    border-radius: 50%;
+  }
+  .modal-close:hover{ background: rgba(0,0,0,0.06); }
+  .modal-meta{
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+    color: #5B6650; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .modal-title{
+    font-family: 'Kalam', cursive; font-weight: 700;
+    font-size: 30px; margin: 6px 0 16px; line-height: 1.1;
+  }
+  .modal-section-label{
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: .08em; color: #8A8272;
+    margin: 20px 0 10px;
+  }
+  .modal-ing-list{ list-style: none; padding:0; margin:0; font-size: 14px; line-height: 1.85; }
+  .modal-ing-list li{ display:flex; align-items:center; gap: 8px; }
+  .modal-ing-list li.have{ color: #33472A; }
+  .modal-ing-list li.missing{ color: #8A8272; }
+  .modal-ing-list .ing-dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .modal-ing-list li.have .ing-dot{ background: var(--herb); }
+  .modal-ing-list li.missing .ing-dot{ background: #C9BFA5; }
+  .steps-note{
+    font-size: 12.5px; font-style: italic; color: #8A8272; margin-bottom: 4px;
+  }
+  .steps-note:empty{ display:none; }
+
+  .steps{ list-style: none; padding:0; margin: 0; counter-reset: step; }
+  .steps li{
+    counter-increment: step;
+    display: flex; gap: 14px;
+    padding: 12px 0;
+    border-top: 1px dashed #CFC6AC;
+    font-size: 14.5px; line-height: 1.6;
+  }
+  .steps li:first-child{ border-top: none; }
+  .steps li::before{
+    content: counter(step);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500; font-size: 13px;
+    background: var(--gold); color: #1E2A1F;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .card{ cursor: pointer; }
+  .card:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  footer{
+    position: relative; z-index: 2;
+    text-align: center; padding: 30px 24px 50px;
+    color: var(--text-dim); font-size: 12.5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  @media (max-width: 480px){
+    .card-title{ font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header>
+  <div class="brand"><span class="dot"></span> PANTRY IQ</div>
+  <div class="lang-picker">
+    <label for="langSelect" id="langLabel">Language</label>
+    <select id="langSelect">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी (Hindi)</option>
+      <option value="ta">தமிழ் (Tamil)</option>
+      <option value="ml">മലയാളം (Malayalam)</option>
+      <option value="te">తెలుగు (Telugu)</option>
+      <option value="kn">ಕನ್ನಡ (Kannada)</option>
+      <option value="zh">中文 (Chinese)</option>
+    </select>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 class="headline" id="headline">What's in your <span class="accent">pantry</span> tonight,<br>and what can it <span class="accent2">become</span>?</h1>
+  <p class="sub" id="subText">Discover delicious recipes using the ingredients you already have. Add what's on your shelf — we'll do the matching.</p>
+
+  <div class="pantry-box">
+    <label class="pantry-label" for="ingredientInput" id="pantryLabel">Add ingredients from your kitchen</label>
+    <div class="input-row">
+      <input id="ingredientInput" type="text" placeholder="e.g. garlic, eggs, rice…" autocomplete="off">
+      <button class="add-btn" id="addBtn">Add to pantry</button>
+    </div>
+    <div class="quick-adds" id="quickAdds"></div>
+    <div class="tags" id="tagList">
+      <span class="empty-hint" id="emptyHint">Your pantry is empty — add a few ingredients to see matching recipes.</span>
+    </div>
+  </div>
+</section>
+
+<div class="controls">
+  <div class="result-count" id="resultCount"></div>
+  <label class="toggle">
+    <input type="checkbox" id="readyOnly">
+    <span id="toggleLabel">Only show recipes I can make right now</span>
+  </label>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-section-label" id="modalIngLabel">Ingredients</div>
+    <ul class="modal-ing-list" id="modalIngredients"></ul>
+    <div class="modal-section-label" id="modalStepsLabel">Steps</div>
+    <div class="steps-note" id="stepsNote"></div>
+    <ol class="steps" id="modalSteps"></ol>
+  </div>
+</div>
+
+<footer id="footerText">pantryIQ — a small tool for using up what's already in the kitchen.</footer>
+
+<script>
+const RECIPES = [
+  { name: "Garlic Butter Pasta", time: "20 min", tag: "Dinner", ingredients: ["pasta","butter","garlic","parmesan","parsley","salt","black pepper"],
+    steps: ["Boil pasta in salted water until al dente, then reserve half a cup of the pasta water.","Melt butter in a pan over medium heat and add minced garlic, cooking until fragrant, about 1 minute.","Add the drained pasta to the pan along with a splash of the reserved pasta water.","Toss well, then stir in parmesan, salt, and black pepper.","Finish with chopped parsley and serve hot."] },
+  { name: "Veggie Fried Rice", time: "18 min", tag: "Dinner", ingredients: ["rice","egg","soy sauce","carrot","peas","garlic","green onion","sesame oil"],
+    steps: ["Use day-old cooked rice so the grains stay separate when fried.","Heat sesame oil in a wok and scramble the egg, then set it aside.","Sauté garlic, carrot, and peas until just tender.","Add the rice, breaking up clumps, and stir-fry for 2–3 minutes.","Return the egg to the wok, add soy sauce, and toss everything together.","Top with sliced green onion before serving."] },
+  { name: "Classic Omelette", time: "10 min", tag: "Breakfast", ingredients: ["eggs","butter","salt","black pepper","cheese","milk"],
+    steps: ["Whisk eggs with a splash of milk, salt, and black pepper.","Melt butter in a nonstick pan over medium-low heat.","Pour in the eggs and let them set slightly at the edges.","Sprinkle cheese over one half.","Fold the omelette in half and cook another 30 seconds before serving."] },
+  { name: "Tomato Basil Soup", time: "30 min", tag: "Lunch", ingredients: ["tomato","onion","garlic","vegetable broth","basil","olive oil","cream"],
+    steps: ["Sauté chopped onion and garlic in olive oil until soft.","Add chopped tomatoes and cook down for 5 minutes.","Pour in vegetable broth and simmer for 15 minutes.","Blend the soup until smooth.","Stir in cream and torn basil leaves, then season to taste."] },
+  { name: "Chickpea Salad", time: "15 min", tag: "Lunch", ingredients: ["chickpeas","cucumber","tomato","red onion","lemon","olive oil","feta"],
+    steps: ["Drain and rinse the chickpeas.","Dice cucumber, tomato, and red onion.","Combine everything in a bowl with crumbled feta.","Dress with olive oil and fresh lemon juice.","Toss well and season with salt before serving."] },
+  { name: "Banana Pancakes", time: "20 min", tag: "Breakfast", ingredients: ["flour","banana","egg","milk","baking powder","butter","honey"],
+    steps: ["Mash the banana in a large bowl.","Whisk in egg, milk, and melted butter.","Fold in flour and baking powder until just combined.","Cook spoonfuls of batter on a buttered pan until bubbles form, then flip.","Drizzle with honey and serve warm."] },
+  { name: "Grilled Cheese Sandwich", time: "10 min", tag: "Lunch", ingredients: ["bread","cheese","butter"],
+    steps: ["Butter one side of each slice of bread.","Layer cheese between the slices, buttered sides facing out.","Grill in a pan over medium heat until golden, about 3 minutes per side.","Slice and serve while the cheese is still melty."] },
+  { name: "Black Bean Tacos", time: "20 min", tag: "Dinner", ingredients: ["black beans","tortilla","onion","lime","cilantro","avocado","cumin"],
+    steps: ["Sauté diced onion until soft, then add black beans and cumin.","Mash lightly and cook for 5 minutes, adding a splash of water if dry.","Warm the tortillas in a dry pan.","Fill with the bean mixture, sliced avocado, and cilantro.","Finish with a squeeze of lime."] },
+  { name: "Lentil Curry", time: "35 min", tag: "Dinner", ingredients: ["lentils","onion","garlic","ginger","tomato","coconut milk","curry powder","rice"],
+    steps: ["Sauté onion, garlic, and ginger until fragrant.","Stir in curry powder and cook for 30 seconds.","Add lentils, chopped tomato, and enough water to cover.","Simmer for 20 minutes until the lentils are soft.","Stir in coconut milk and simmer 5 more minutes.","Serve over cooked rice."] },
+  { name: "Caprese Salad", time: "10 min", tag: "Lunch", ingredients: ["tomato","mozzarella","basil","olive oil","balsamic vinegar","salt"],
+    steps: ["Slice tomato and mozzarella into rounds.","Arrange alternating on a plate with fresh basil leaves.","Drizzle with olive oil and balsamic vinegar.","Season with salt and serve immediately."] },
+  { name: "Shakshuka", time: "30 min", tag: "Breakfast", ingredients: ["eggs","tomato","onion","bell pepper","garlic","cumin","paprika","olive oil"],
+    steps: ["Sauté onion and bell pepper in olive oil until soft.","Add garlic, cumin, and paprika, cooking until fragrant.","Stir in chopped tomatoes and simmer 10 minutes until thickened.","Make small wells in the sauce and crack in the eggs.","Cover and cook until the eggs are just set, about 6–8 minutes."] },
+  { name: "Peanut Noodles", time: "15 min", tag: "Dinner", ingredients: ["noodles","peanut butter","soy sauce","garlic","lime","green onion","chili flakes"],
+    steps: ["Cook the noodles according to package directions and drain.","Whisk together peanut butter, soy sauce, minced garlic, lime juice, and a splash of hot water.","Toss the noodles in the sauce until well coated.","Top with sliced green onion and chili flakes."] },
+  { name: "Veggie Stir Fry", time: "20 min", tag: "Dinner", ingredients: ["broccoli","carrot","bell pepper","garlic","soy sauce","ginger","sesame oil","rice"],
+    steps: ["Heat sesame oil in a wok over high heat.","Add garlic and ginger, stirring for 30 seconds.","Add broccoli, carrot, and bell pepper, stir-frying until crisp-tender.","Pour in soy sauce and toss to coat.","Serve hot over rice."] },
+  { name: "French Toast", time: "15 min", tag: "Breakfast", ingredients: ["bread","eggs","milk","cinnamon","butter","maple syrup"],
+    steps: ["Whisk eggs, milk, and cinnamon together in a shallow dish.","Dip each slice of bread until soaked but not falling apart.","Melt butter in a pan and cook the slices until golden on both sides.","Serve warm with maple syrup."] },
+  { name: "Baked Potato Bar", time: "50 min", tag: "Dinner", ingredients: ["potato","butter","cheese","sour cream","green onion","bacon bits"],
+    steps: ["Prick potatoes with a fork and bake at 425°F (220°C) for about 45 minutes until tender.","Slice each potato open and fluff the inside with a fork.","Add a knob of butter and let it melt in.","Top with cheese, sour cream, green onion, and bacon bits."] },
+  { name: "Greek Yogurt Parfait", time: "5 min", tag: "Breakfast", ingredients: ["greek yogurt","granola","honey","berries"],
+    steps: ["Spoon a layer of Greek yogurt into a glass.","Add a layer of granola and berries.","Repeat the layers until the glass is full.","Drizzle honey over the top before serving."] },
+  { name: "Quesadillas", time: "15 min", tag: "Lunch", ingredients: ["tortilla","cheese","onion","bell pepper","sour cream","salsa"],
+    steps: ["Sauté onion and bell pepper until softened.","Sprinkle cheese over half a tortilla and top with the sautéed vegetables.","Fold the tortilla over and cook in a dry pan until golden on both sides.","Slice into wedges and serve with sour cream and salsa."] },
+  { name: "Mushroom Risotto", time: "40 min", tag: "Dinner", ingredients: ["rice","mushroom","onion","garlic","vegetable broth","parmesan","butter","white wine"],
+    steps: ["Sauté mushrooms in butter until browned, then set aside.","In the same pot, cook onion and garlic until soft.","Add rice and toast for 1–2 minutes, then deglaze with white wine.","Add warm vegetable broth a ladle at a time, stirring until each addition is absorbed.","Once the rice is creamy and tender, stir in the mushrooms and parmesan."] },
+
+  { name: "Chana Masala", time: "30 min", tag: "Indian", ingredients: ["chickpeas","onion","tomato","garlic","ginger","cumin","coriander powder","garam masala","oil"],
+    steps: ["Heat oil and sauté cumin until it sizzles.","Add chopped onion and cook until golden.","Stir in garlic and ginger, cooking until fragrant.","Add chopped tomato, coriander powder, and garam masala, cooking until the oil separates.","Add chickpeas and a splash of water, then simmer for 10–12 minutes.","Mash a few chickpeas to thicken the sauce and serve."] },
+  { name: "Palak Paneer", time: "35 min", tag: "Indian", ingredients: ["spinach","paneer","onion","tomato","garlic","ginger","cream","garam masala","cumin"],
+    steps: ["Blanch spinach briefly, then blend into a smooth purée.","Sauté cumin, onion, garlic, and ginger until golden.","Add chopped tomato and cook until soft.","Stir in the spinach purée and garam masala, simmering for 5 minutes.","Add cubed paneer and cream, and simmer 5 more minutes before serving."] },
+  { name: "Dal Tadka", time: "30 min", tag: "Indian", ingredients: ["lentils","onion","tomato","garlic","ginger","cumin seeds","turmeric","ghee","coriander leaves"],
+    steps: ["Boil lentils with turmeric and water until soft, about 15–20 minutes.","In a separate pan, heat ghee and sizzle cumin seeds.","Add chopped garlic, ginger, and onion, cooking until golden.","Stir in chopped tomato and cook until softened.","Pour this tempering over the cooked lentils and simmer briefly.","Garnish with coriander leaves."] },
+  { name: "Aloo Gobi", time: "25 min", tag: "Indian", ingredients: ["potato","cauliflower","onion","tomato","cumin seeds","turmeric","coriander powder","oil"],
+    steps: ["Heat oil and sizzle cumin seeds.","Add onion and cook until soft.","Add potato and cauliflower florets, stirring to coat with turmeric and coriander powder.","Add chopped tomato, cover, and cook on low heat for 15 minutes, stirring occasionally.","Cook uncovered for a final few minutes until vegetables are tender."] },
+  { name: "Butter Chicken", time: "45 min", tag: "Indian", ingredients: ["chicken","yogurt","tomato","butter","cream","garlic","ginger","garam masala","kashmiri chili"],
+    steps: ["Marinate chicken in yogurt, garlic, ginger, and half the spices for at least 20 minutes.","Cook the marinated chicken in a hot pan until browned, then set aside.","In the same pan, melt butter and cook chopped tomato until soft, then blend smooth.","Return the sauce to the pan with garam masala and kashmiri chili.","Add the chicken back in and simmer for 10 minutes.","Stir in cream just before serving."] },
+  { name: "Chicken Biryani", time: "60 min", tag: "Indian", ingredients: ["rice","chicken","yogurt","onion","garlic","ginger","biryani masala","saffron","mint","ghee"],
+    steps: ["Marinate chicken in yogurt, garlic, ginger, and biryani masala for at least 30 minutes.","Fry sliced onions in ghee until deep golden, then set aside.","Cook the marinated chicken until nearly done.","Parboil the rice separately until about 70% cooked.","Layer the rice over the chicken, top with fried onions, mint, and saffron soaked in warm milk.","Cover tightly and cook on low heat for 20 minutes, then rest 5 minutes before fluffing and serving."] },
+  { name: "Rajma", time: "40 min", tag: "Indian", ingredients: ["kidney beans","onion","tomato","garlic","ginger","cumin","garam masala","oil"],
+    steps: ["Heat oil and sauté cumin until fragrant.","Add chopped onion and cook until golden.","Stir in garlic and ginger, then chopped tomato, cooking until the oil separates.","Add garam masala and cooked kidney beans with their liquid.","Simmer for 20 minutes, mashing a few beans to thicken.","Serve hot with rice."] },
+  { name: "Aloo Paratha", time: "30 min", tag: "Indian", ingredients: ["flour","potato","onion","green chili","cumin seeds","coriander leaves","ghee"],
+    steps: ["Boil and mash the potatoes, then mix with chopped onion, green chili, cumin seeds, and coriander leaves.","Make a simple dough with flour and water, and divide into balls.","Roll out a ball, place a portion of filling in the center, and seal it inside.","Roll out gently into a flat round.","Cook on a hot griddle with ghee until golden spots form on both sides."] },
+  { name: "Masala Dosa", time: "40 min", tag: "Indian", ingredients: ["rice","urad dal","potato","onion","mustard seeds","curry leaves","turmeric","oil"],
+    steps: ["Use a pre-fermented rice and urad dal batter (soak and blend the night before if starting fresh).","For the filling, sauté mustard seeds and curry leaves in oil, then add onion.","Add boiled, mashed potato and turmeric, mixing well.","Spread a ladle of batter thin on a hot griddle to form the dosa.","Cook until crisp, add the potato filling, and fold before serving."] },
+  { name: "Paneer Tikka", time: "25 min", tag: "Indian", ingredients: ["paneer","yogurt","bell pepper","onion","ginger","garlic","garam masala","kashmiri chili","oil"],
+    steps: ["Mix yogurt with ginger, garlic, garam masala, kashmiri chili, and a little oil.","Cube the paneer, bell pepper, and onion, then coat well in the marinade.","Let marinate for at least 15 minutes.","Thread onto skewers and pan-sear or grill, turning until charred and cooked through.","Serve hot with a squeeze of lemon."] },
+  { name: "Vegetable Pulao", time: "25 min", tag: "Indian", ingredients: ["rice","carrot","peas","onion","cumin seeds","bay leaf","ghee","whole spices"],
+    steps: ["Heat ghee and add whole spices, bay leaf, and cumin seeds until fragrant.","Add sliced onion and cook until translucent.","Stir in carrot and peas, cooking for 2 minutes.","Add rice and toast briefly, then add water in a 1:2 ratio.","Cover and simmer until the rice is tender and water is absorbed, about 15 minutes."] },
+  { name: "Egg Curry", time: "30 min", tag: "Indian", ingredients: ["eggs","onion","tomato","garlic","ginger","turmeric","garam masala","oil"],
+    steps: ["Hard boil the eggs, peel, and set aside.","Sauté onion in oil until golden, then add garlic and ginger.","Stir in chopped tomato, turmeric, and garam masala, cooking until thickened.","Add a splash of water to reach a curry consistency and simmer 5 minutes.","Add the boiled eggs, halved, and simmer 5 more minutes before serving."] },
+  { name: "Chicken Tikka Masala", time: "45 min", tag: "Indian", ingredients: ["chicken","yogurt","tomato","cream","garlic","ginger","garam masala","kashmiri chili","butter"],
+    steps: ["Marinate chicken in yogurt, garlic, ginger, and spices for at least 20 minutes.","Sear the chicken pieces in a hot pan until charred, then set aside.","Melt butter and cook chopped tomato until soft, then blend into a smooth sauce.","Return the sauce to the pan with garam masala and kashmiri chili, simmering briefly.","Add the chicken back in, stir in cream, and simmer for 10 minutes."] },
+  { name: "Baingan Bharta", time: "35 min", tag: "Indian", ingredients: ["eggplant","onion","tomato","garlic","ginger","cumin seeds","coriander leaves","oil"],
+    steps: ["Char the whole eggplant over a flame or roast until the skin blisters and the inside is soft.","Peel and mash the flesh once cool enough to handle.","Heat oil and sizzle cumin seeds, then add onion, garlic, and ginger.","Add chopped tomato and cook until soft.","Stir in the mashed eggplant and simmer for 8–10 minutes.","Garnish with coriander leaves."] },
+  { name: "Poha", time: "15 min", tag: "Indian", ingredients: ["flattened rice","onion","potato","mustard seeds","curry leaves","turmeric","peanuts","oil"],
+    steps: ["Rinse the flattened rice briefly in a colander and set aside to soften.","Heat oil and sizzle mustard seeds, curry leaves, and peanuts.","Add diced onion and potato, cooking until the potato is tender.","Stir in turmeric, then add the softened flattened rice.","Toss gently to combine and cook for 2–3 minutes before serving."] },
+  { name: "Chole Bhature", time: "45 min", tag: "Indian", ingredients: ["chickpeas","flour","onion","tomato","garlic","ginger","garam masala","yogurt","oil"],
+    steps: ["For the chole, sauté onion, garlic, and ginger in oil until golden.","Add chopped tomato and garam masala, cooking until thickened.","Stir in cooked chickpeas and simmer for 15 minutes.","For the bhature, mix flour with yogurt and a little oil into a soft dough, and let rest 20 minutes.","Roll into ovals and deep-fry until puffed and golden.","Serve the bhature hot alongside the chole."] },
+];
+
+const QUICK_ADD = ["salt","onion","garlic","ginger","tomato","cumin","turmeric","rice","potato","yogurt"];
+
+/* ---------- i18n ---------- */
+let currentLang = 'en';
+
+const UI_I18N = {
+  en: {
+    headline: `What's in your <span class="accent">pantry</span> tonight,<br>and what can it <span class="accent2">become</span>?`,
+    sub: "Discover delicious recipes using the ingredients you already have. Add what's on your shelf — we'll do the matching.",
+    pantryLabel: "Add ingredients from your kitchen",
+    placeholder: "e.g. garlic, eggs, rice…",
+    addBtn: "Add to pantry",
+    emptyHint: "Your pantry is empty — add a few ingredients to see matching recipes.",
+    toggleLabel: "Only show recipes I can make right now",
+    resultCountEmpty: "Add ingredients above to see what you can cook",
+    resultCountMatch: (n,t) => `${n} of ${t} recipes match your pantry`,
+    emptyPantryBig: "Your pantry is empty",
+    emptyPantrySmall: "Add a few ingredients — we'll show the dishes that match, starting with the closest.",
+    noMatchBig: "Nothing matches yet",
+    noMatchSmall: "Try adding a few more staples like onion, garlic, or rice.",
+    cardFooter: (h,t) => `${h} of ${t} ingredients in your pantry · tap for steps`,
+    ingredientsLabel: "Ingredients",
+    stepsLabel: "Steps",
+    stepsNote: "",
+    footer: "pantryIQ — a small tool for using up what's already in the kitchen.",
+    languageLabel: "Language",
+    minUnit: "min"
+  },
+  hi: {
+    headline: `आज रात आपकी <span class="accent">पैंट्री</span> में क्या है,<br>और वह क्या <span class="accent2">बन सकता</span> है?`,
+    sub: "अपने पास मौजूद सामग्री से स्वादिष्ट व्यंजन खोजें। अपनी रसोई में जो है वह जोड़ें — मिलान हम कर देंगे।",
+    pantryLabel: "अपनी रसोई से सामग्री जोड़ें",
+    placeholder: "जैसे लहसुन, अंडे, चावल…",
+    addBtn: "पैंट्री में जोड़ें",
+    emptyHint: "आपकी पैंट्री खाली है — मिलती-जुलती रेसिपी देखने के लिए कुछ सामग्री जोड़ें।",
+    toggleLabel: "केवल वे रेसिपी दिखाएं जो मैं अभी बना सकता/सकती हूं",
+    resultCountEmpty: "आप क्या बना सकते हैं यह देखने के लिए ऊपर सामग्री जोड़ें",
+    resultCountMatch: (n,t) => `${t} में से ${n} रेसिपी आपकी पैंट्री से मेल खाती हैं`,
+    emptyPantryBig: "आपकी पैंट्री खाली है",
+    emptyPantrySmall: "कुछ सामग्री जोड़ें — हम सबसे नज़दीकी मेल से शुरू करके व्यंजन दिखाएंगे।",
+    noMatchBig: "अभी कुछ भी मेल नहीं खाता",
+    noMatchSmall: "प्याज, लहसुन या चावल जैसी कुछ और मुख्य सामग्री जोड़ने का प्रयास करें।",
+    cardFooter: (h,t) => `${t} में से ${h} सामग्री आपकी पैंट्री में है · चरणों के लिए टैप करें`,
+    ingredientsLabel: "सामग्री",
+    stepsLabel: "चरण",
+    stepsNote: "चरण अभी अंग्रेज़ी में दिखाए जा रहे हैं।",
+    footer: "pantryIQ — रसोई में जो पहले से है उसका उपयोग करने के लिए एक छोटा उपकरण।",
+    languageLabel: "भाषा",
+    minUnit: "मिनट"
+  },
+  ta: {
+    headline: `இன்று இரவு உங்கள் <span class="accent">பேண்ட்ரியில்</span> என்ன இருக்கிறது,<br>அது என்னவாக <span class="accent2">மாறும்</span>?`,
+    sub: "உங்களிடம் ஏற்கனவே இருக்கும் பொருட்களைக் கொண்டு சுவையான உணவுகளை கண்டறியுங்கள். உங்கள் அடுக்களையில் இருப்பதைச் சேருங்கள் — பொருத்தத்தை நாங்கள் பார்த்துக்கொள்கிறோம்.",
+    pantryLabel: "உங்கள் சமையலறையிலிருந்து பொருட்களைச் சேர்க்கவும்",
+    placeholder: "எ.கா. பூண்டு, முட்டை, அரிசி…",
+    addBtn: "பேண்ட்ரியில் சேர்க்கவும்",
+    emptyHint: "உங்கள் பேண்ட்ரி காலியாக உள்ளது — பொருத்தமான உணவுகளைக் காண சில பொருட்களைச் சேர்க்கவும்.",
+    toggleLabel: "நான் இப்போது தயாரிக்கக்கூடிய உணவுகளை மட்டும் காட்டு",
+    resultCountEmpty: "நீங்கள் என்ன சமைக்கலாம் என்பதைக் காண மேலே பொருட்களைச் சேர்க்கவும்",
+    resultCountMatch: (n,t) => `${t} இல் ${n} உணவுகள் உங்கள் பேண்ட்ரியுடன் பொருந்துகின்றன`,
+    emptyPantryBig: "உங்கள் பேண்ட்ரி காலியாக உள்ளது",
+    emptyPantrySmall: "சில பொருட்களைச் சேர்க்கவும் — பொருந்தும் உணவுகளை நெருக்கமானவற்றிலிருந்து காண்பிப்போம்.",
+    noMatchBig: "இன்னும் எதுவும் பொருந்தவில்லை",
+    noMatchSmall: "வெங்காயம், பூண்டு அல்லது அரிசி போன்ற இன்னும் சில பொருட்களைச் சேர்க்க முயற்சிக்கவும்.",
+    cardFooter: (h,t) => `${t} இல் ${h} பொருட்கள் உங்கள் பேண்ட்ரியில் உள்ளன · படிகளுக்கு தட்டவும்`,
+    ingredientsLabel: "பொருட்கள்",
+    stepsLabel: "படிகள்",
+    stepsNote: "படிகள் தற்போது ஆங்கிலத்தில் காட்டப்படுகின்றன.",
+    footer: "pantryIQ — சமையலறையில் ஏற்கனவே இருப்பதைப் பயன்படுத்த ஒரு சிறிய கருவி.",
+    languageLabel: "மொழி",
+    minUnit: "நிமிடங்கள்"
+  },
+  ml: {
+    headline: `ഇന്ന് രാത്രി നിങ്ങളുടെ <span class="accent">പാൻട്രിയിൽ</span> എന്താണുള്ളത്,<br>അത് എന്താകാം <span class="accent2">മാറാൻ</span>?`,
+    sub: "നിങ്ങളുടെ പക്കലുള്ള ചേരുവകൾ ഉപയോഗിച്ച് രുചികരമായ വിഭവങ്ങൾ കണ്ടെത്തുക. നിങ്ങളുടെ അടുക്കളയിലുള്ളത് ചേർക്കൂ — പൊരുത്തം ഞങ്ങൾ നോക്കിക്കൊള്ളാം.",
+    pantryLabel: "നിങ്ങളുടെ അടുക്കളയിൽ നിന്ന് ചേരുവകൾ ചേർക്കുക",
+    placeholder: "ഉദാ: വെളുത്തുള്ളി, മുട്ട, അരി…",
+    addBtn: "പാൻട്രിയിൽ ചേർക്കുക",
+    emptyHint: "നിങ്ങളുടെ പാൻട്രി ശൂന്യമാണ് — പൊരുത്തപ്പെടുന്ന വിഭവങ്ങൾ കാണാൻ ചില ചേരുവകൾ ചേർക്കുക.",
+    toggleLabel: "എനിക്ക് ഇപ്പോൾ ഉണ്ടാക്കാൻ കഴിയുന്ന വിഭവങ്ങൾ മാത്രം കാണിക്കുക",
+    resultCountEmpty: "നിങ്ങൾക്ക് എന്ത് പാചകം ചെയ്യാമെന്ന് കാണാൻ മുകളിൽ ചേരുവകൾ ചേർക്കുക",
+    resultCountMatch: (n,t) => `${t} ൽ ${n} വിഭവങ്ങൾ നിങ്ങളുടെ പാൻട്രിയുമായി പൊരുത്തപ്പെടുന്നു`,
+    emptyPantryBig: "നിങ്ങളുടെ പാൻട്രി ശൂന്യമാണ്",
+    emptyPantrySmall: "ചില ചേരുവകൾ ചേർക്കുക — ഏറ്റവും അടുത്തുള്ളത് മുതൽ പൊരുത്തപ്പെടുന്ന വിഭവങ്ങൾ ഞങ്ങൾ കാണിക്കും.",
+    noMatchBig: "ഇതുവരെ ഒന്നും പൊരുത്തപ്പെടുന്നില്ല",
+    noMatchSmall: "ഉള്ളി, വെളുത്തുള്ളി അല്ലെങ്കിൽ അരി പോലുള്ള കുറച്ചു കൂടി ചേരുവകൾ ചേർക്കാൻ ശ്രമിക്കുക.",
+    cardFooter: (h,t) => `${t} ൽ ${h} ചേരുവകൾ നിങ്ങളുടെ പാൻട്രിയിലുണ്ട് · സ്റ്റെപ്പുകൾക്കായി ടാപ്പ് ചെയ്യുക`,
+    ingredientsLabel: "ചേരുവകൾ",
+    stepsLabel: "സ്റ്റെപ്പുകൾ",
+    stepsNote: "സ്റ്റെപ്പുകൾ ഇപ്പോൾ ഇംഗ്ലീഷിൽ കാണിക്കുന്നു.",
+    footer: "pantryIQ — അടുക്കളയിൽ ഇതിനകം ഉള്ളത് ഉപയോഗിക്കാനുള്ള ഒരു ചെറിയ ഉപകരണം.",
+    languageLabel: "ഭാഷ",
+    minUnit: "മിനിറ്റ്"
+  },
+  te: {
+    headline: `ఈ రాత్రి మీ <span class="accent">పాంట్రీలో</span> ఏముంది,<br>అది ఏమి <span class="accent2">కావచ్చు</span>?`,
+    sub: "మీ వద్ద ఇప్పటికే ఉన్న పదార్థాలతో రుచికరమైన వంటకాలను కనుగొనండి. మీ వంటగదిలో ఉన్నవి జోడించండి — సరిపోలికను మేము చూసుకుంటాము.",
+    pantryLabel: "మీ వంటగది నుండి పదార్థాలను జోడించండి",
+    placeholder: "ఉదా: వెల్లుల్లి, గుడ్లు, బియ్యం…",
+    addBtn: "పాంట్రీకి జోడించండి",
+    emptyHint: "మీ పాంట్రీ ఖాళీగా ఉంది — సరిపోలే వంటకాలను చూడటానికి కొన్ని పదార్థాలను జోడించండి.",
+    toggleLabel: "నేను ఇప్పుడే చేయగలిగే వంటకాలను మాత్రమే చూపించు",
+    resultCountEmpty: "మీరు ఏమి వండగలరో చూడటానికి పైన పదార్థాలను జోడించండి",
+    resultCountMatch: (n,t) => `${t} లో ${n} వంటకాలు మీ పాంట్రీతో సరిపోతాయి`,
+    emptyPantryBig: "మీ పాంట్రీ ఖాళీగా ఉంది",
+    emptyPantrySmall: "కొన్ని పదార్థాలను జోడించండి — దగ్గరగా సరిపోలేవాటితో మొదలుపెట్టి వంటకాలను చూపిస్తాము.",
+    noMatchBig: "ఇంకా ఏదీ సరిపోలడం లేదు",
+    noMatchSmall: "ఉల్లిపాయ, వెల్లుల్లి లేదా బియ్యం వంటి మరికొన్ని ప్రధాన పదార్థాలను జోడించడానికి ప్రయత్నించండి.",
+    cardFooter: (h,t) => `${t} లో ${h} పదార్థాలు మీ పాంట్రీలో ఉన్నాయి · స్టెప్స్ కోసం నొక్కండి`,
+    ingredientsLabel: "పదార్థాలు",
+    stepsLabel: "స్టెప్స్",
+    stepsNote: "స్టెప్స్ ప్రస్తుతం ఇంగ్లీష్‌లో చూపబడుతున్నాయి.",
+    footer: "pantryIQ — వంటగదిలో ఇప్పటికే ఉన్నదాన్ని ఉపయోగించడానికి ఒక చిన్న సాధనం.",
+    languageLabel: "భాష",
+    minUnit: "నిమిషాలు"
+  },
+  kn: {
+    headline: `ಇಂದು ರಾತ್ರಿ ನಿಮ್ಮ <span class="accent">ಪ್ಯಾಂಟ್ರಿಯಲ್ಲಿ</span> ಏನಿದೆ,<br>ಅದು ಏನಾಗಬಹುದು <span class="accent2">ಆಗಬಹುದು</span>?`,
+    sub: "ನಿಮ್ಮ ಬಳಿ ಈಗಾಗಲೇ ಇರುವ ಪದಾರ್ಥಗಳಿಂದ ರುಚಿಕರವಾದ ಪಾಕವಿಧಾನಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ. ನಿಮ್ಮ ಅಡುಗೆಮನೆಯಲ್ಲಿರುವುದನ್ನು ಸೇರಿಸಿ — ಹೊಂದಾಣಿಕೆಯನ್ನು ನಾವು ನೋಡಿಕೊಳ್ಳುತ್ತೇವೆ.",
+    pantryLabel: "ನಿಮ್ಮ ಅಡುಗೆಮನೆಯಿಂದ ಪದಾರ್ಥಗಳನ್ನು ಸೇರಿಸಿ",
+    placeholder: "ಉದಾ: ಬೆಳ್ಳುಳ್ಳಿ, ಮೊಟ್ಟೆ, ಅಕ್ಕಿ…",
+    addBtn: "ಪ್ಯಾಂಟ್ರಿಗೆ ಸೇರಿಸಿ",
+    emptyHint: "ನಿಮ್ಮ ಪ್ಯಾಂಟ್ರಿ ಖಾಲಿ ಇದೆ — ಹೊಂದಾಣಿಕೆಯ ಪಾಕವಿಧಾನಗಳನ್ನು ನೋಡಲು ಕೆಲವು ಪದಾರ್ಥಗಳನ್ನು ಸೇರಿಸಿ.",
+    toggleLabel: "ನಾನು ಈಗಲೇ ಮಾಡಬಹುದಾದ ಪಾಕವಿಧಾನಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಿ",
+    resultCountEmpty: "ನೀವು ಏನು ಅಡುಗೆ ಮಾಡಬಹುದು ಎಂದು ನೋಡಲು ಮೇಲೆ ಪದಾರ್ಥಗಳನ್ನು ಸೇರಿಸಿ",
+    resultCountMatch: (n,t) => `${t} ರಲ್ಲಿ ${n} ಪಾಕವಿಧಾನಗಳು ನಿಮ್ಮ ಪ್ಯಾಂಟ್ರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತವೆ`,
+    emptyPantryBig: "ನಿಮ್ಮ ಪ್ಯಾಂಟ್ರಿ ಖಾಲಿ ಇದೆ",
+    emptyPantrySmall: "ಕೆಲವು ಪದಾರ್ಥಗಳನ್ನು ಸೇರಿಸಿ — ಹತ್ತಿರದ ಹೊಂದಾಣಿಕೆಯಿಂದ ಪ್ರಾರಂಭಿಸಿ ಭಕ್ಷ್ಯಗಳನ್ನು ತೋರಿಸುತ್ತೇವೆ.",
+    noMatchBig: "ಇನ್ನೂ ಏನೂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ",
+    noMatchSmall: "ಈರುಳ್ಳಿ, ಬೆಳ್ಳುಳ್ಳಿ ಅಥವಾ ಅಕ್ಕಿಯಂತಹ ಇನ್ನೂ ಕೆಲವು ಪದಾರ್ಥಗಳನ್ನು ಸೇರಿಸಲು ಪ್ರಯತ್ನಿಸಿ.",
+    cardFooter: (h,t) => `${t} ರಲ್ಲಿ ${h} ಪದಾರ್ಥಗಳು ನಿಮ್ಮ ಪ್ಯಾಂಟ್ರಿಯಲ್ಲಿವೆ · ಹಂತಗಳಿಗಾಗಿ ಟ್ಯಾಪ್ ಮಾಡಿ`,
+    ingredientsLabel: "ಪದಾರ್ಥಗಳು",
+    stepsLabel: "ಹಂತಗಳು",
+    stepsNote: "ಹಂತಗಳನ್ನು ಪ್ರಸ್ತುತ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗಿದೆ.",
+    footer: "pantryIQ — ಅಡುಗೆಮನೆಯಲ್ಲಿ ಈಗಾಗಲೇ ಇರುವುದನ್ನು ಬಳಸಲು ಒಂದು ಸಣ್ಣ ಸಾಧನ.",
+    languageLabel: "ಭಾಷೆ",
+    minUnit: "ನಿಮಿಷ"
+  },
+  zh: {
+    headline: `今晚你的<span class="accent">食品柜</span>里有什么，<br>它能变成<span class="accent2">什么美味</span>？`,
+    sub: "用你已有的食材发现美味食谱。添加你厨房里有的东西——匹配交给我们。",
+    pantryLabel: "添加你厨房里的食材",
+    placeholder: "例如：大蒜、鸡蛋、米饭…",
+    addBtn: "添加到食品柜",
+    emptyHint: "你的食品柜是空的——添加一些食材以查看匹配的食谱。",
+    toggleLabel: "只显示我现在能做的食谱",
+    resultCountEmpty: "在上方添加食材以查看你能做什么",
+    resultCountMatch: (n,t) => `${t} 个食谱中有 ${n} 个与你的食品柜匹配`,
+    emptyPantryBig: "你的食品柜是空的",
+    emptyPantrySmall: "添加一些食材——我们会从最匹配的开始展示菜品。",
+    noMatchBig: "还没有匹配的食谱",
+    noMatchSmall: "试着再添加一些洋葱、大蒜或米饭之类的常用食材。",
+    cardFooter: (h,t) => `${t} 种食材中你有 ${h} 种 · 点击查看步骤`,
+    ingredientsLabel: "食材",
+    stepsLabel: "步骤",
+    stepsNote: "步骤目前以英文显示。",
+    footer: "pantryIQ——一个用完厨房现有食材的小工具。",
+    languageLabel: "语言",
+    minUnit: "分钟"
+  }
+};
+
+// Dish names translated per language, in the same order as RECIPES above.
+const NAMES_I18N = {
+  en: RECIPES.map(r => r.name),
+  hi: ["गार्लिक बटर पास्ता","वेजी फ्राइड राइस","क्लासिक ऑमलेट","टमाटर तुलसी सूप","चने का सलाद","केले के पैनकेक","ग्रिल्ड चीज़ सैंडविच","ब्लैक बीन टैको","मसूर करी","कैप्रिस सलाद","शकशुका","पीनट नूडल्स","वेजी स्टर फ्राई","फ्रेंच टोस्ट","बेक्ड आलू","ग्रीक योगर्ट परफे","क्वेसाडिया","मशरूम रिसोट्टो","चना मसाला","पालक पनीर","दाल तड़का","आलू गोभी","बटर चिकन","चिकन बिरयानी","राजमा","आलू पराठा","मसाला डोसा","पनीर टिक्का","वेजिटेबल पुलाव","अंडा करी","चिकन टिक्का मसाला","बैंगन भरता","पोहा","छोले भटूरे"],
+  ta: ["காரிக் பட்டர் பாஸ்தா","காய்கறி வறுத்த சாதம்","சாதாரண ஆம்லெட்","தக்காளி துளசி சூப்","கொண்டைக்கடலை சாலட்","வாழைப்பழ பான்கேக்","கிரில்டு சீஸ் சாண்ட்விச்","கருப்பு பீன்ஸ் டாக்கோ","பருப்பு கறி","கேப்ரீஸ் சாலட்","ஷக்ஷூகா","நிலக்கடலை நூடுல்ஸ்","காய்கறி ஸ்டிர் ஃப்ரை","ஃப்ரெஞ்ச் டோஸ்ட்","சுட்ட உருளைக்கிழங்கு","கிரேக்க தயிர் பர்ஃபே","குவெசடில்லா","காளான் ரிசோட்டோ","சன்னா மசாலா","பாலக் பன்னீர்","தால் தட்கா","ஆலு கோபி","பட்டர் சிக்கன்","சிக்கன் பிரியாணி","ராஜ்மா","ஆலு பராத்தா","மசாலா தோசை","பன்னீர் திக்கா","காய்கறி புலாவ்","முட்டை கறி","சிக்கன் திக்கா மசாலா","கத்தரிக்காய் பர்த்தா","அவல் (போஹா)","சோலே பட்டூரா"],
+  ml: ["ഗാർലിക് ബട്ടർ പാസ്ത","വെജി ഫ്രൈഡ് റൈസ്","ക്ലാസിക് ഓംലെറ്റ്","തക്കാളി തുളസി സൂപ്പ്","കടല സാലഡ്","വാഴപ്പഴം പാൻകേക്ക്","ഗ്രിൽഡ് ചീസ് സാൻഡ്‌വിച്ച്","ബ്ലാക്ക് ബീൻ ടാക്കോ","പരിപ്പ് കറി","കാപ്രീസ് സാലഡ്","ഷക്ഷൂക്ക","പീനട്ട് നൂഡിൽസ്","വെജി സ്റ്റിർ ഫ്രൈ","ഫ്രഞ്ച് ടോസ്റ്റ്","ബേക്ക്ഡ് ഉരുളക്കിഴങ്ങ്","ഗ്രീക്ക് യോഗർട്ട് പാർഫേ","ക്വെസഡിയ","മഷ്‌റൂം റിസോട്ടോ","ചന്ന മസാല","പാലക് പനീർ","ദാൽ തഡ്ക","ആലു ഗോബി","ബട്ടർ ചിക്കൻ","ചിക്കൻ ബിരിയാണി","രാജ്മ","ആലു പറാത്ത","മസാല ദോശ","പനീർ ടിക്ക","വെജിറ്റബിൾ പുലാവ്","മുട്ട കറി","ചിക്കൻ ടിക്ക മസാല","വഴുതനങ്ങ പുരാട്ട","അവിൽ (പോഹ)","ചോലെ ഭട്ടൂരെ"],
+  te: ["గార్లిక్ బటర్ పాస్తా","వెజీ ఫ్రైడ్ రైస్","క్లాసిక్ ఆమ్లెట్","టమాటో బేసిల్ సూప్","శనగల సలాడ్","అరటిపండు పాన్‌కేక్","గ్రిల్డ్ చీజ్ శాండ్విచ్","బ్లాక్ బీన్ టాకోస్","పప్పు కూర","కాప్రీసీ సలాడ్","షక్షూకా","పీనట్ నూడుల్స్","వెజీ స్టిర్ ఫ్రై","ఫ్రెంచ్ టోస్ట్","బేక్డ్ బంగాళదుంప","గ్రీక్ యోగర్ట్ పార్ఫే","క్వెసడియా","మష్రూమ్ రిసోట్టో","చన్నా మసాలా","పాలక్ పన్నీర్","దాల్ తడ్కా","ఆలు గోబి","బటర్ చికెన్","చికెన్ బిర్యానీ","రాజ్మా","ఆలు పరాఠా","మసాలా దోశ","పన్నీర్ టిక్కా","వెజిటబుల్ పులావ్","గుడ్డు కూర","చికెన్ టిక్కా మసాలా","వంకాయ బర్తా","అటుకులు (పోహా)","చోలే భటూరే"],
+  kn: ["ಗಾರ್ಲಿಕ್ ಬಟರ್ ಪಾಸ್ತಾ","ವೆಜಿ ಫ್ರೈಡ್ ರೈಸ್","ಸಾಮಾನ್ಯ ಆಮ್ಲೆಟ್","ಟೊಮ್ಯಾಟೊ ಬೇಸಿಲ್ ಸೂಪ್","ಕಡಲೆ ಸಲಾಡ್","ಬಾಳೆಹಣ್ಣಿನ ಪ್ಯಾನ್‌ಕೇಕ್","ಗ್ರಿಲ್ಡ್ ಚೀಸ್ ಸ್ಯಾಂಡ್‌ವಿಚ್","ಬ್ಲ್ಯಾಕ್ ಬೀನ್ ಟಾಕೋ","ಬೇಳೆ ಸಾರು","ಕ್ಯಾಪ್ರೀಸ್ ಸಲಾಡ್","ಶಕ್ಷೂಕಾ","ಪೀನಟ್ ನೂಡಲ್ಸ್","ವೆಜಿ ಸ್ಟಿರ್ ಫ್ರೈ","ಫ್ರೆಂಚ್ ಟೋಸ್ಟ್","ಬೇಕ್ಡ್ ಆಲೂಗಡ್ಡೆ","ಗ್ರೀಕ್ ಯೋಗರ್ಟ್ ಪಾರ್ಫೆ","ಕ್ವೆಸಾಡಿಯಾ","ಮಶ್ರೂಮ್ ರಿಸೊಟ್ಟೊ","ಚನ್ನಾ ಮಸಾಲಾ","ಪಾಲಕ್ ಪನೀರ್","ದಾಲ್ ತಡ್ಕಾ","ಆಲೂ ಗೋಬಿ","ಬಟರ್ ಚಿಕನ್","ಚಿಕನ್ ಬಿರಿಯಾನಿ","ರಾಜ್ಮಾ","ಆಲೂ ಪರಾಠಾ","ಮಸಾಲಾ ದೋಸೆ","ಪನೀರ್ ಟಿಕ್ಕಾ","ವೆಜಿಟೇಬಲ್ ಪುಲಾವ್","ಮೊಟ್ಟೆ ಸಾರು","ಚಿಕನ್ ಟಿಕ್ಕಾ ಮಸಾಲಾ","ಬದನೆಕಾಯಿ ಬರ್ತಾ","ಅವಲಕ್ಕಿ (ಪೋಹಾ)","ಛೋಲೆ ಭಟೂರೆ"],
+  zh: ["蒜香黄油意面","蔬菜炒饭","经典煎蛋卷","番茄罗勒汤","鹰嘴豆沙拉","香蕉煎饼","烤芝士三明治","黑豆玉米饼","扁豆咖喱","卡普里沙拉","沙卡蔬卡","花生面","蔬菜炒菜","法式吐司","烤土豆","希腊酸奶芭菲","墨西哥夹饼","蘑菇烩饭","鹰嘴豆咖喱","菠菜奶酪咖喱","印度黄豆咖喱","土豆花椰菜咖喱","黄油鸡","鸡肉印度香饭","红腰豆咖喱","土豆馅饼","马萨拉多萨饼","印度奶酪烤串","蔬菜香饭","鸡蛋咖喱","提卡玛萨拉鸡","烤茄子泥","印度薄米片","鹰嘴豆炸饼套餐"]
+};
+
+const TAGS_I18N = {
+  en: { Breakfast: "Breakfast", Lunch: "Lunch", Dinner: "Dinner", Indian: "Indian" },
+  hi: { Breakfast: "नाश्ता", Lunch: "दोपहर का भोजन", Dinner: "रात का खाना", Indian: "भारतीय" },
+  ta: { Breakfast: "காலை உணவு", Lunch: "மதிய உணவு", Dinner: "இரவு உணவு", Indian: "இந்திய" },
+  ml: { Breakfast: "പ്രഭാതഭക്ഷണം", Lunch: "ഉച്ചഭക്ഷണം", Dinner: "അത്താഴം", Indian: "ഇന്ത്യൻ" },
+  te: { Breakfast: "అల్పాహారం", Lunch: "మధ్యాహ్న భోజనం", Dinner: "రాత్రి భోజనం", Indian: "భారతీయ" },
+  kn: { Breakfast: "ಬೆಳಗಿನ ಉಪಾಹಾರ", Lunch: "ಮಧ್ಯಾಹ್ನದ ಊಟ", Dinner: "ರಾತ್ರಿ ಊಟ", Indian: "ಭಾರತೀಯ" },
+  zh: { Breakfast: "早餐", Lunch: "午餐", Dinner: "晚餐", Indian: "印度菜" }
+};
+
+// Common quick-add ingredients get a translated label; the underlying
+// matching value always stays the English key so search still works.
+const QUICK_ADD_I18N = {
+  en: { salt:"salt", onion:"onion", garlic:"garlic", ginger:"ginger", tomato:"tomato", cumin:"cumin", turmeric:"turmeric", rice:"rice", potato:"potato", yogurt:"yogurt" },
+  hi: { salt:"नमक", onion:"प्याज", garlic:"लहसुन", ginger:"अदरक", tomato:"टमाटर", cumin:"जीरा", turmeric:"हल्दी", rice:"चावल", potato:"आलू", yogurt:"दही" },
+  ta: { salt:"உப்பு", onion:"வெங்காயம்", garlic:"பூண்டு", ginger:"இஞ்சி", tomato:"தக்காளி", cumin:"சீரகம்", turmeric:"மஞ்சள்", rice:"அரிசி", potato:"உருளைக்கிழங்கு", yogurt:"தயிர்" },
+  ml: { salt:"ഉപ്പ്", onion:"ഉള്ളി", garlic:"വെളുത്തുള്ളി", ginger:"ഇഞ്ചി", tomato:"തക്കാളി", cumin:"ജീരകം", turmeric:"മഞ്ഞൾ", rice:"അരി", potato:"ഉരുളക്കിഴങ്ങ്", yogurt:"തൈര്" },
+  te: { salt:"ఉప్పు", onion:"ఉల్లిపాయ", garlic:"వెల్లుల్లి", ginger:"అల్లం", tomato:"టమాటో", cumin:"జీలకర్ర", turmeric:"పసుపు", rice:"బియ్యం", potato:"బంగాళదుంప", yogurt:"పెరుగు" },
+  kn: { salt:"ಉಪ್ಪು", onion:"ಈರುಳ್ಳಿ", garlic:"ಬೆಳ್ಳುಳ್ಳಿ", ginger:"ಶುಂಠಿ", tomato:"ಟೊಮ್ಯಾಟೊ", cumin:"ಜೀರಿಗೆ", turmeric:"ಅರಿಶಿನ", rice:"ಅಕ್ಕಿ", potato:"ಆಲೂಗಡ್ಡೆ", yogurt:"ಮೊಸರು" },
+  zh: { salt:"盐", onion:"洋葱", garlic:"大蒜", ginger:"姜", tomato:"番茄", cumin:"孜然", turmeric:"姜黄", rice:"米饭", potato:"土豆", yogurt:"酸奶" }
+};
+
+function dishName(r){
+  const idx = RECIPES.indexOf(r);
+  return (NAMES_I18N[currentLang] && NAMES_I18N[currentLang][idx]) || r.name;
+}
+function tagName(tag){
+  return (TAGS_I18N[currentLang] && TAGS_I18N[currentLang][tag]) || tag;
+}
+function timeLabel(timeStr){
+  const n = parseInt(timeStr, 10);
+  const unit = UI_I18N[currentLang].minUnit;
+  return `${n} ${unit}`;
+}
+function displayIngredient(val){
+  const dict = QUICK_ADD_I18N[currentLang];
+  return (dict && dict[val]) || val;
+}
+
+let pantry = [];
+
+const tagList = document.getElementById('tagList');
+const emptyHint = document.getElementById('emptyHint');
+const input = document.getElementById('ingredientInput');
+const addBtn = document.getElementById('addBtn');
+const quickAdds = document.getElementById('quickAdds');
+const grid = document.getElementById('grid');
+const resultCount = document.getElementById('resultCount');
+const readyOnly = document.getElementById('readyOnly');
+const langSelect = document.getElementById('langSelect');
+const langLabel = document.getElementById('langLabel');
+const headlineEl = document.getElementById('headline');
+const subTextEl = document.getElementById('subText');
+const pantryLabelEl = document.getElementById('pantryLabel');
+const toggleLabelEl = document.getElementById('toggleLabel');
+const footerTextEl = document.getElementById('footerText');
+const modalIngLabelEl = document.getElementById('modalIngLabel');
+const modalStepsLabelEl = document.getElementById('modalStepsLabel');
+const stepsNoteEl = document.getElementById('stepsNote');
+
+function renderStaticText(){
+  const t = UI_I18N[currentLang];
+  headlineEl.innerHTML = t.headline;
+  subTextEl.textContent = t.sub;
+  pantryLabelEl.textContent = t.pantryLabel;
+  input.placeholder = t.placeholder;
+  addBtn.textContent = t.addBtn;
+  toggleLabelEl.textContent = t.toggleLabel;
+  footerTextEl.textContent = t.footer;
+  langLabel.textContent = t.languageLabel;
+  modalIngLabelEl.textContent = t.ingredientsLabel;
+  modalStepsLabelEl.textContent = t.stepsLabel;
+  document.documentElement.lang = currentLang;
+}
+
+langSelect.addEventListener('change', () => {
+  currentLang = langSelect.value;
+  renderStaticText();
+  renderTags();
+  renderQuickAdds();
+  renderRecipes();
+});
+
+function renderQuickAdds(){
+  quickAdds.innerHTML = '';
+  QUICK_ADD.forEach(item => {
+    if(pantry.includes(item)) return;
+    const b = document.createElement('button');
+    b.className = 'chip-suggest';
+    b.textContent = '+ ' + displayIngredient(item);
+    b.onclick = () => addIngredient(item);
+    quickAdds.appendChild(b);
+  });
+}
+
+function addIngredient(raw){
+  const val = raw.trim().toLowerCase();
+  if(!val || pantry.includes(val)) return;
+  pantry.push(val);
+  renderTags();
+  renderQuickAdds();
+  renderRecipes();
+}
+
+function removeIngredient(val){
+  pantry = pantry.filter(i => i !== val);
+  renderTags();
+  renderQuickAdds();
+  renderRecipes();
+}
+
+function renderTags(){
+  tagList.innerHTML = '';
+  if(pantry.length === 0){
+    emptyHint.textContent = UI_I18N[currentLang].emptyHint;
+    tagList.appendChild(emptyHint);
+    return;
+  }
+  pantry.forEach(item => {
+    const label = displayIngredient(item);
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.innerHTML = `${label} <button aria-label="remove ${label}">×</button>`;
+    span.querySelector('button').onclick = () => removeIngredient(item);
+    tagList.appendChild(span);
+  });
+}
+
+function jarSvg(pct){
+  const fillHeight = 34 * pct;
+  const fillY = 44 - fillHeight;
+  const color = pct >= 1 ? '#8AAE64' : pct >= 0.5 ? '#D9A441' : '#C1502E';
+  return `
+    <svg viewBox="0 0 40 52">
+      <rect x="14" y="4" width="12" height="6" rx="1" fill="#CFC6AC"/>
+      <rect x="8" y="10" width="24" height="38" rx="4" fill="#EFE8D6" stroke="#CFC6AC" stroke-width="1.5"/>
+      <clipPath id="clip"><rect x="8" y="10" width="24" height="38" rx="4"/></clipPath>
+      <rect x="8" y="${fillY}" width="24" height="${fillHeight}" fill="${color}" clip-path="url(#clip)" opacity="0.85"/>
+    </svg>`;
+}
+
+function renderRecipes(){
+  const t = UI_I18N[currentLang];
+  const withMatch = RECIPES.map(r => {
+    const have = r.ingredients.filter(i => pantry.includes(i));
+    const pct = pantry.length === 0 ? 0 : have.length / r.ingredients.length;
+    return { ...r, have, pct };
+  });
+
+  withMatch.sort((a,b) => b.pct - a.pct);
+
+  const filtered = readyOnly.checked
+    ? withMatch.filter(r => r.pct === 1)
+    : withMatch.filter(r => r.have.length > 0);
+
+  grid.innerHTML = '';
+
+  if(pantry.length === 0){
+    resultCount.textContent = t.resultCountEmpty;
+    grid.innerHTML = `<div class="no-results"><span class="big">${t.emptyPantryBig}</span>${t.emptyPantrySmall}</div>`;
+    return;
+  }
+
+  resultCount.textContent = t.resultCountMatch(filtered.length, RECIPES.length);
+
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="no-results"><span class="big">${t.noMatchBig}</span>${t.noMatchSmall}</div>`;
+    return;
+  }
+
+  filtered.forEach(r => {
+    const name = dishName(r);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${name}`);
+    const pctLabel = pantry.length === 0 ? '' : Math.round(r.pct * 100) + '%';
+    const ingHtml = r.ingredients.map(ing => {
+      const has = r.have.includes(ing);
+      return `<li class="${has ? 'have' : 'missing'}"><span class="ing-dot"></span>${displayIngredient(ing)}</li>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="tape"></div>
+      <div class="card-top">
+        <div>
+          <div class="card-meta">${tagName(r.tag)} · ${timeLabel(r.time)}</div>
+          <div class="card-title">${name}</div>
+        </div>
+        <div class="jar">${jarSvg(pantry.length === 0 ? 0 : r.pct)}<div class="jar-pct">${pctLabel}</div></div>
+      </div>
+      <ul class="ing-list">${ingHtml}</ul>
+      <div class="card-footer">${t.cardFooter(r.have.length, r.ingredients.length)}</div>
+    `;
+    card.addEventListener('click', () => openModal(r));
+    card.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModal(r); }
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- modal ---------- */
+const modalOverlay = document.getElementById('modalOverlay');
+const modalMeta = document.getElementById('modalMeta');
+const modalTitle = document.getElementById('modalTitle');
+const modalIngredients = document.getElementById('modalIngredients');
+const modalSteps = document.getElementById('modalSteps');
+const modalClose = document.getElementById('modalClose');
+let lastFocused = null;
+
+function openModal(r){
+  const t = UI_I18N[currentLang];
+  const have = r.ingredients.filter(i => pantry.includes(i));
+  modalMeta.textContent = `${tagName(r.tag)} · ${timeLabel(r.time)}`;
+  modalTitle.textContent = dishName(r);
+  modalIngredients.innerHTML = r.ingredients.map(ing => {
+    const has = have.includes(ing);
+    return `<li class="${has ? 'have' : 'missing'}"><span class="ing-dot"></span>${displayIngredient(ing)}</li>`;
+  }).join('');
+  stepsNoteEl.textContent = t.stepsNote;
+  modalSteps.innerHTML = r.steps.map(s => `<li>${s}</li>`).join('');
+  lastFocused = document.activeElement;
+  modalOverlay.classList.add('open');
+  modalClose.focus();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if(lastFocused) lastFocused.focus();
+}
+
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if(e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+addBtn.onclick = () => { addIngredient(input.value); input.value=''; input.focus(); };
+input.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ addIngredient(input.value); input.value=''; }
+});
+readyOnly.addEventListener('change', renderRecipes);
+
+renderStaticText();
+renderQuickAdds();
+renderRecipes();
+</script>
+</body>
+</html>
