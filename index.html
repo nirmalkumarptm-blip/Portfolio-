@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nirmalkumar — Portfolio</title>
+<title>Nirmalkumar — Web Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -197,6 +197,24 @@
   .project-stack { display: flex; flex-wrap: wrap; gap: 0.6rem; }
   .stack-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.4rem 0.85rem; border-radius: 5px; background: rgba(238,243,247,0.1); }
 
+  /* ---- project slider ---- */
+  .project-slider { position: relative; overflow: hidden; }
+  .project-track { display: flex; transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1); }
+  .project-slide { flex: 0 0 100%; min-width: 100%; box-sizing: border-box; }
+  .project-slide .project-card { margin-top: 0; height: 100%; }
+  .slider-controls { display: flex; align-items: center; justify-content: center; gap: 1.4rem; margin-top: 1.6rem; }
+  .slider-arrow {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--paper-panel);
+    color: var(--ink); cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .slider-arrow:hover { background: var(--blue); color: var(--paper); transform: translateY(-2px); }
+  .slider-dots { display: flex; gap: 0.5rem; }
+  .slider-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); border: none; cursor: pointer; padding: 0; transition: background 0.2s, width 0.2s; }
+  .slider-dot.active { background: var(--cyan); width: 22px; border-radius: 5px; }
+
   .avail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
   .avail-item { padding: 1.3rem; border-radius: 10px; border: 1px solid var(--line); background: var(--paper-panel); }
   .avail-item .label { color: var(--amber); }
@@ -264,47 +282,132 @@
 
 <section id="project" class="block">
   <div class="block-head">
-    <span class="path">project/wonder-vista</span>
-    <h2>Featured Project</h2>
+    <span class="path" id="projectPath">project/wonder-vista</span>
+    <h2>Featured Projects</h2>
   </div>
-  <div class="project-card">
-    <div class="project-top">
-      <div>
-        <div class="project-path">tourist-package-system</div>
-        <h3>Wonder Vista</h3>
+
+  <div class="project-slider">
+    <div class="project-track" id="projectTrack">
+
+      <div class="project-slide">
+        <div class="project-card">
+          <div class="project-top">
+            <div>
+              <div class="project-path">tourist-package-system</div>
+              <h3>Wonder Vista</h3>
+            </div>
+            <div class="project-status">In progress · No live demo yet</div>
+          </div>
+          <p class="project-desc">A web platform for browsing and booking curated tourist packages — built with a team of three, covering the 30 best travel packages across India.</p>
+          <div class="project-meta-row">
+            <span><strong>Team size:</strong> 3 members</span>
+            <span><strong>Packages:</strong> Top 30 across India</span>
+            <span><strong>My role:</strong> Web development</span>
+          </div>
+          <div class="project-features">
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Package browsing</h4>
+              <p>Users explore a curated list of the top 30 tourist packages across India.</p>
+            </div>
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Booking flow</h4>
+              <p>A straightforward path from picking a package to booking it.</p>
+            </div>
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Team-built</h4>
+              <p>Developed collaboratively with two other team members.</p>
+            </div>
+          </div>
+          <div class="project-stack">
+            <span class="stack-tag">HTML</span>
+            <span class="stack-tag">CSS</span>
+            <span class="stack-tag">JavaScript</span>
+          </div>
+        </div>
       </div>
-      <div class="project-status">In progress · No live demo yet</div>
-    </div>
-    <p class="project-desc">A web platform for browsing and booking curated tourist packages — built with a team of three, covering the 30 best travel packages across India.</p>
-    <div class="project-meta-row">
-      <span><strong>Team size:</strong> 3 members</span>
-      <span><strong>Packages:</strong> Top 30 across India</span>
-      <span><strong>My role:</strong> Web development</span>
-    </div>
-    <div class="project-features">
-      <div class="feature">
-        <span class="tag-mark">→</span>
-        <h4>Package browsing</h4>
-        <p>Users explore a curated list of the top 30 tourist packages across India.</p>
+
+      <div class="project-slide">
+        <div class="project-card">
+          <div class="project-top">
+            <div>
+              <div class="project-path">pantry-recipe-matcher</div>
+              <h3>PantryIQ</h3>
+            </div>
+            <div class="project-status">In progress · Demo available</div>
+          </div>
+          <p class="project-desc">A recipe discovery tool that matches dishes to the ingredients you already have on hand — add what's in your kitchen and PantryIQ surfaces the recipes you're closest to being able to cook.</p>
+          <div class="project-meta-row">
+            <span><strong>Status:</strong> Actively building</span>
+            <span><strong>Languages:</strong> 7 supported</span>
+            <span><strong>My role:</strong> Web development</span>
+          </div>
+          <div class="project-features">
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Ingredient matching</h4>
+              <p>Add ingredients from your kitchen and see recipes ranked by how many you already have.</p>
+            </div>
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Ready-to-cook filter</h4>
+              <p>Toggle to only show recipes you can make right now, no extra shopping needed.</p>
+            </div>
+            <div class="feature">
+              <span class="tag-mark">→</span>
+              <h4>Multi-language UI</h4>
+              <p>Interface available in English, Hindi, Tamil, Malayalam, Telugu, Kannada, and Chinese.</p>
+            </div>
+          </div>
+          <div class="project-stack">
+            <span class="stack-tag">HTML</span>
+            <span class="stack-tag">CSS</span>
+            <span class="stack-tag">JavaScript</span>
+          </div>
+          <a href="pantryiq.html" target="_blank" rel="noopener" class="btn btn-solid" style="margin-top: 1.8rem; display: inline-block;">View demo →</a>
+        </div>
       </div>
-      <div class="feature">
-        <span class="tag-mark">→</span>
-        <h4>Booking flow</h4>
-        <p>A straightforward path from picking a package to booking it.</p>
-      </div>
-      <div class="feature">
-        <span class="tag-mark">→</span>
-        <h4>Team-built</h4>
-        <p>Developed collaboratively with two other team members.</p>
-      </div>
+
     </div>
-    <div class="project-stack">
-      <span class="stack-tag">HTML</span>
-      <span class="stack-tag">CSS</span>
-      <span class="stack-tag">JavaScript</span>
+  </div>
+
+  <div class="slider-controls">
+    <button class="slider-arrow" id="prevProject" aria-label="Previous project">‹</button>
+    <div class="slider-dots" id="projectDots">
+      <button class="slider-dot active" data-index="0" aria-label="Go to project 1"></button>
+      <button class="slider-dot" data-index="1" aria-label="Go to project 2"></button>
     </div>
+    <button class="slider-arrow" id="nextProject" aria-label="Next project">›</button>
   </div>
 </section>
+
+<script>
+  (function () {
+    const track = document.getElementById('projectTrack');
+    const slides = track.querySelectorAll('.project-slide');
+    const dots = document.querySelectorAll('#projectDots .slider-dot');
+    const prevBtn = document.getElementById('prevProject');
+    const nextBtn = document.getElementById('nextProject');
+    const pathLabel = document.getElementById('projectPath');
+    const paths = ['project/wonder-vista', 'project/pantry-iq'];
+    let current = 0;
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+      pathLabel.textContent = paths[current];
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    dots.forEach((dot) => dot.addEventListener('click', () => goTo(Number(dot.dataset.index))));
+
+    goTo(0);
+  })();
+</script>
 
 <section id="skills" class="block">
   <div class="block-head">
@@ -371,14 +474,4 @@
     <p>Open to freelance work, collaborations, and opportunities to learn. Reach out anytime.</p>
     <div class="contact-links">
       <a href="mailto:nirmalkumarptm@gmail.com" class="btn btn-solid">Email me</a>
-      <a href="https://github.com/nirmalkumarptm-blip" target="_blank" rel="noopener" class="btn btn-outline">GitHub</a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  Designed &amp; built by Nirmalkumar — Portfolio 2026
-</footer>
-
-</body>
-</html>
+      <a href="https://github.com/nirmalkumarptm-blip" 
