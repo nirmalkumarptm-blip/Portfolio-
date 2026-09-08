@@ -24,14 +24,17 @@
   html { scroll-behavior: smooth; }
 
   body {
-    background:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-      var(--paper);
-    background-size: 32px 32px;
+   background-image:
+     linear-gradient(var(--grid-line)1px, transparent 1px),
+     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+     url();
+    background-size: 32px 32px, 32px 32px, cover;
+    background-position: 0 0, 0 0,center;
+    background-repeat: repeat, repeat, no-repeat;
+    background-attachment: scroll, scroll, fixed;
     color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
   }
 
   @media (prefers-reduced-motion: reduce) {
