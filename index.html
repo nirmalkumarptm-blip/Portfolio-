@@ -13,28 +13,47 @@
     --paper-panel: #FFFFFF;
     --ink: #0F2137;
     --ink-soft: #44586F;
-    --blue: #1E3A5F;
-    --cyan: #2FA8A0;
-    --amber: #E8A33D;
+    --blue: #1A1D22;
+    --cyan: #E10600;
+    --amber: #FFC93C;
     --grid-line: rgba(15, 33, 55, 0.07);
     --line: rgba(15, 33, 55, 0.13);
+    --crimson: #C23B33;
+    --gold: #D4A72C;
+    --steel: #3A4A5C;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
   body {
-   background-image:
-     linear-gradient(var(--grid-line)1px, transparent 1px),
-     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-     url("nimi-bg.jpg");
-    background-size: 32px 32px, 32px 32px, cover;
-    background-position: 0 0, 0 0,center;
-    background-repeat: repeat, repeat, no-repeat;
-    background-attachment: scroll, scroll, fixed;
+    background-color(--paper);
     color: var(--ink);
-    font-family:'Inter', sans-serif;
-    line-height:1.6;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .bg-photo {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image: url("nimi-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      radial-gradient(ellipse 60% 40% at 12% 100%, rgba(225,6,0,0.05), transparent 70%),
+      radial-gradient(ellipse 50% 35% at 92% 100%, rgba(225,6,0,0.05), transparent 70%),
+      linear-gradient((180deg, rgba(238,243,247,0.94) 0%, rgba(238,243,247,0.88) 40%, rgba(238,243,247,0.94) 100%);
+    background size: 32px 32px, 32px 32px, 100% 100%, 100% 100%, 100% 100%;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -80,6 +99,13 @@
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
   }
+   header::after {
+     content: "";
+     position: ansolute;
+     left: 0; right: 0; bottom: -5px;
+     height: 5px;
+     background-image: repeating-linear-gradient(90deg, var(--link) 0 9px, var(--paper-panel) 9px 18px);
+   }
   .logo { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.95rem; }
   .logo span { color: var(--cyan); }
   nav ul { display: flex; gap: clamp(1rem, 3vw, 2.2rem); list-style: none; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
@@ -95,6 +121,8 @@
     padding: 7rem clamp(1.5rem, 6vw, 5rem) 4rem;
     max-width: 1100px;
     margin: 0 auto;
+    position: relative;
+    overflow: hidden;
   }
   .hero .path { margin-bottom: 1.6rem; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
   .hero h1 {
