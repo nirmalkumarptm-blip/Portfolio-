@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nirmalkumar — Portfolio</title>
+<title>Nirmalkumar — Web Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,47 +13,25 @@
     --paper-panel: #FFFFFF;
     --ink: #0F2137;
     --ink-soft: #44586F;
-    --blue: #1A1D22;
-    --cyan: #E10600;
-    --amber: #FFC93C;
+    --blue: #1E3A5F;
+    --cyan: #2FA8A0;
+    --amber: #E8A33D;
     --grid-line: rgba(15, 33, 55, 0.07);
     --line: rgba(15, 33, 55, 0.13);
-    --crimson: #C23B33;
-    --gold: #D4A72C;
-    --steel: #3A4A5C;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
   body {
-    background-color(--paper);
-    color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-    position: relative;
-  }
-
-  .bg-photo {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background-image: url("nimi-bg.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  .bg-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
     background:
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-      radial-gradient(ellipse 60% 40% at 12% 100%, rgba(225,6,0,0.05), transparent 70%),
-      radial-gradient(ellipse 50% 35% at 92% 100%, rgba(225,6,0,0.05), transparent 70%),
-      linear-gradient((180deg, rgba(238,243,247,0.94) 0%, rgba(238,243,247,0.88) 40%, rgba(238,243,247,0.94) 100%);
-    background size: 32px 32px, 32px 32px, 100% 100%, 100% 100%, 100% 100%;
+      var(--paper);
+    background-size: 32px 32px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -99,13 +77,6 @@
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
   }
-   header::after {
-     content: "";
-     position: ansolute;
-     left: 0; right: 0; bottom: -5px;
-     height: 5px;
-     background-image: repeating-linear-gradient(90deg, var(--link) 0 9px, var(--paper-panel) 9px 18px);
-   }
   .logo { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.95rem; }
   .logo span { color: var(--cyan); }
   nav ul { display: flex; gap: clamp(1rem, 3vw, 2.2rem); list-style: none; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
@@ -121,8 +92,6 @@
     padding: 7rem clamp(1.5rem, 6vw, 5rem) 4rem;
     max-width: 1100px;
     margin: 0 auto;
-    position: relative;
-    overflow: hidden;
   }
   .hero .path { margin-bottom: 1.6rem; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
   .hero h1 {
@@ -132,12 +101,12 @@
     opacity: 0;
     animation: fadeUp 0.8s ease forwards 0.25s;
   }
-  .hero h1 .accent { color: #ffffff; }
+  .hero h1 .accent { color: var(--cyan); }
   .hero p {
     margin-top: 1.6rem;
     max-width: 52ch;
     font-size: 1.05rem;
-    color: #ffffff;
+    color: var(--ink-soft);
     opacity: 0;
     animation: fadeUp 0.8s ease forwards 0.4s;
   }
@@ -154,9 +123,7 @@
   }
   .btn-solid { background: var(--ink); color: var(--paper); }
   .btn-solid:hover { background: var(--cyan); border-color: var(--cyan); }
-  .btn-outline { color: #ffffff; border-color: #ffffff; }
-  .btn-outline:hover { background: var(--ink); color: #ffffff; border-color: #ffffff; }
-
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(14px); }
@@ -178,7 +145,7 @@
 
   .block { max-width: 1000px; margin: 0 auto; padding: 5rem clamp(1.5rem, 5vw, 2.5rem); border-top: 1px solid var(--line); }
   .block-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2.6rem; }
-  .block-head h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); -webkit-text-stroke: 1px #ffffff; }
+  .block-head h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); }
 
   .panel { background: var(--paper-panel); border: 1px solid var(--line); border-radius: 12px; padding: clamp(1.6rem, 4vw, 2.6rem); }
 
@@ -366,12 +333,12 @@
         <div class="project-card">
           <div class="project-top">
             <div>
-              <div class="project-path">cooking-recipe-matcher</div>
-              <h3>nimiGO</h3>
+              <div class="project-path">pantry-recipe-matcher</div>
+              <h3>PantryIQ</h3>
             </div>
             <div class="project-status">In progress · Demo available</div>
           </div>
-          <p class="project-desc">A recipe discovery tool that matches dishes to the ingredients you already have on hand — add what's in your kitchen and nimiGO surfaces the recipes you're closest to being able to cook.</p>
+          <p class="project-desc">A recipe discovery tool that matches dishes to the ingredients you already have on hand — add what's in your kitchen and PantryIQ surfaces the recipes you're closest to being able to cook.</p>
           <div class="project-meta-row">
             <span><strong>Status:</strong> Actively building</span>
             <span><strong>Languages:</strong> 7 supported</span>
@@ -399,7 +366,7 @@
             <span class="stack-tag">CSS</span>
             <span class="stack-tag">JavaScript</span>
           </div>
-          <a href="nimiGO.html" target="_blank" rel="noopener" class="btn btn-solid" style="margin-top: 1.8rem; display: inline-block;">View demo →</a>
+          <a href="pantryiq.html" target="_blank" rel="noopener" class="btn btn-solid" style="margin-top: 1.8rem; display: inline-block;">View demo →</a>
         </div>
       </div>
 
@@ -513,8 +480,8 @@
 </section>
 
 <footer>
-  Designed &amp; build by Nirmalkumar - Portfolio 2026
+  Designed &amp; built by Nirmalkumar — Portfolio 2026
 </footer>
 
 </body>
-</html>  
+</html>
