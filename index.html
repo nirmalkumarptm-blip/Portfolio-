@@ -24,10 +24,23 @@
   html { scroll-behavior: smooth; }
 
   body {
-      background-image: url("nk-bg.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+
+    background image:
+      linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+      url("nk-bg.jpg")
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+
+    min-height: 100vh;
   }
 
   @media (prefers-reduced-motion: reduce) {
